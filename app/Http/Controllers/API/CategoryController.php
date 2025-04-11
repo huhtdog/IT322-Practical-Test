@@ -16,7 +16,7 @@ class CategoryController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name' => 'required|unique:categories,name'
+            'name' => 'required|string|max:255|unique:categories',
         ]);
 
         return Category::create($request->all());
@@ -29,6 +29,10 @@ class CategoryController extends Controller
 
     public function update(Request $request, $id)
     {
+        $request->validate([
+            'name' => 'required|string|max:255|unique:categories,name,' . $id,
+        ]);
+
         $category = Category::findOrFail($id);
         $category->update($request->all());
         return $category;
@@ -36,7 +40,8 @@ class CategoryController extends Controller
 
     public function destroy($id)
     {
-        Category::destroy($id);
-        return response()->json(['message' => 'Deleted successfully']);
+        $category = Category::findOrFail($id);
+        $category->delete();
+        return response()->json(['message' => 'Category deleted']);
     }
 }
